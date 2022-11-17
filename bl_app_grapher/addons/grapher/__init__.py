@@ -24,13 +24,13 @@ if _need_reload:
 
 
 def register():
-    print('Addon Register', __file__)
+    print("Addon Register", __file__)
     ops.register()
     ui.register()
 
 
 def unregister():
-    print('Addon Unregister', __file__)
+    print("Addon Unregister", __file__)
     ops.unregister()
     ui.unregister()
 

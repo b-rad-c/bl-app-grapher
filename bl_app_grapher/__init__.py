@@ -28,6 +28,10 @@ from bl_app_override.helpers import AppOverrideState
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL
+from io import BytesIO
+
+
+TMP_PNG_PATH = (Path(__file__).parent / 'grapher.tmp.png').as_posix()
 
 
 #
@@ -131,39 +135,7 @@ def get_context_for_area(area: bpy.types.Area, region_type="WINDOW") -> Dict:
     return {}
 
 
-@persistent
-def load_background_image(dummy: None):
-    # get background image
-    graph = Path(__file__).absolute().parent / 'myfig.png'
-    image = bpy.data.images.load(graph.as_posix(), check_existing=True)
-    image.name = graph.stem
-
-    breakpoint()
-    
-    # init wm
-    wm = bpy.data.window_managers['WinMan']
-    win = wm.windows[0]
-    screen = win.screen
-    screen.show_statusbar = False
-    
-    # customise spaces
-    for area in screen.areas:
-        for space in area.spaces:
-
-            if space.type == 'IMAGE_EDITOR':
-                print('found img edit')
-
-                space.show_region_header = False
-                area.spaces.active.image = image    
-                bpy.ops.image.view_all(get_context_for_area(area), fit_view=True)
-
-            if space.type == 'PROPERTIES':
-                print('found properties')
-                items = space.rna_type.properties['context'].enum_items
-                #breakpoint()
-
-
-def example_plot(opacity=1.0):
+def example_plot():
     print('example_plot()')
     col = np.linspace(0, 2 * np.pi, 200)
     row = np.sin(col)
@@ -173,72 +145,60 @@ def example_plot(opacity=1.0):
 
     fig.canvas.draw()
     canvas = fig.canvas
-    
 
-    width, height = canvas.get_width_height()
-    rgb = canvas.tostring_rgb()
-    
-    print(f'\tcanvas {width=} {height=} {len(rgb)=}')
-    print(f'\t{width*height*3=} {width*height*4=}')
-    img = PIL.Image.frombytes('RGB', (width, height),  rgb)
-
-    # breakpoint()
-
-    value = lambda n: n * (1/255)
-
-    pixels = []
-
-    for row in range(height):
-        for col in range(width):
-            r, g, b = img.getpixel((col, row))
-            pixels.extend([value(r), value(g), value(b), opacity])
-    
-    assert len(pixels) == width * height * 4
-    print('\treturning...')
-    
     plt.close()
-    return width, height, pixels
+    
+    # width, height = canvas.get_width_height()
+
+    png = BytesIO()
+    canvas.print_png(png)
+    
+    # print(f'\tcanvas: {width=} {height=}')
+    img = PIL.Image.open(png)
+    img.save(TMP_PNG_PATH)
+
+    # value = lambda n: n * (1/255)
+
+    # pixels = []
+
+    # for row in reversed(range(height)):
+    #     for col in range(width):
+    #         try:
+    #             r, g, b, a = img.getpixel((col, row))
+    #             pixels.extend([value(r), value(g), value(b), value(a)])
+    #         except ValueError:
+    #             print(f'caught error at: {row=} {col=}')
+    #             raise
+    
+    # assert len(pixels) == width * height * 4
+    # return width, height, pixels
+
 
 @persistent
 def load_background_image2(_: None):
+    print('load_background_image2()')
+
+    #
     # init wm
+    #
+
     wm = bpy.data.window_managers['WinMan']
     win = wm.windows[0]
     screen = win.screen
     screen.show_statusbar = False
 
-    width, height, pixels = example_plot()
+    #
+    # generate plot
+    # 
 
-    image = bpy.data.images.new('bl-app-grapher-output', width, height)
-    # image.scale(width, height)
+    example_plot()
+    image = bpy.data.images.load(TMP_PNG_PATH)
 
-    print(f'\n...\n{width=} {height=} {len(pixels)}')
-    # breakpoint()
-    # image.source = 'GENERATED'
-    
 
-    # index = 0
-    # increment = 4
-
-    print('setting...')
-
-    image.pixels.foreach_set(pixels)
-
-    #image.pixels[:] = pixels
-    image.update()
-
-    # breakpoint()
-
-    # for pixel in pixels:
-    #     print(f'{index=}')
-    #     image.pixels[index:index + increment] = pixel
-    #     index += increment
-
-    print('set...')
-
-    #breakpoint()
-    
+    #
     # customise spaces
+    #
+
     for area in screen.areas:
         for space in area.spaces:
 
@@ -247,6 +207,7 @@ def load_background_image2(_: None):
 
                 space.show_region_header = False
                 area.spaces.active.image = image    
+                #image.scale(width, height)
                 bpy.ops.image.view_all(get_context_for_area(area), fit_view=True)
 
             if space.type == 'PROPERTIES':
@@ -260,7 +221,7 @@ def load_background_image2(_: None):
 #
 
 app_state = AppStateStore()
-active_load_post_handlers = [example_plot, load_background_image2]
+active_load_post_handlers = [load_background_image2]
 
 
 def register():
