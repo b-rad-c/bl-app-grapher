@@ -3,17 +3,17 @@ from typing import Set
 from .util import TMP_PNG_PATH, example_plot, get_context_for_area
 
 
-class generate_example_plot(bpy.types.Operator):
-    bl_idname = 'grapher.generate_example_plot'
-    bl_label = 'Example plot'
-    bl_description = 'Creates an example plot and displays it'
+class refresh_plot(bpy.types.Operator):
+    bl_idname = 'grapher.refresh_plot'
+    bl_label = 'Refresh plot'
+    bl_description = 'Refreshes the plot image'
 
     @classmethod
     def poll(cls, _) -> bool:
         return True
 
     def execute(self, context: bpy.types.Context) -> Set[str]:
-        example_plot()
+        example_plot(context.scene.grapher_n)
         image = bpy.data.images.load(TMP_PNG_PATH)
 
         for area in context.screen.areas:
@@ -31,7 +31,7 @@ class generate_example_plot(bpy.types.Operator):
 #
 
 
-classes = [generate_example_plot]
+classes = [refresh_plot]
 
 def register():
     for cls in classes:

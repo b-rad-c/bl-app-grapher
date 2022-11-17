@@ -2,7 +2,28 @@ import bpy
 from typing import Any
 
 #
-# draw topbar (file/window menus)
+# properties panel
+#
+
+class GrapherPanel(bpy.types.Panel):
+    """Creates a Panel in the Object properties window"""
+    bl_label = 'Grapher Properties'
+    bl_idname = 'GRAPHER_PT_panel'
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = 'object'
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.prop(context.scene, 'grapher_n')
+
+        row = layout.row()
+        row.operator('grapher.refresh_plot')
+
+#
+# topbar (file/window menus)
 #
 
 class MV_TOPBAR_MT_file_menu(bpy.types.Menu):
@@ -12,7 +33,6 @@ class MV_TOPBAR_MT_file_menu(bpy.types.Menu):
     def draw(self, context: bpy.types.Context) -> None:
         row = self.layout.row(align=True)
         row.operator('wm.quit_blender', text='Quit', icon='QUIT')
-
 
 class MV_TOPBAR_MT_window_menu(bpy.types.Menu):
     bl_idname = 'MV_TOPBAR_MT_window_menu'
@@ -31,7 +51,7 @@ def topbar_menu_draw(self: Any, context: bpy.types.Context) -> None:
 # registration
 #
 
-classes = [MV_TOPBAR_MT_file_menu, MV_TOPBAR_MT_window_menu]
+classes = [MV_TOPBAR_MT_file_menu, MV_TOPBAR_MT_window_menu, GrapherPanel]
 
 def register():
     for cls in classes:

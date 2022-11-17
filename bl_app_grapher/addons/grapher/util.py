@@ -1,12 +1,12 @@
 import bpy
-
-from io import BytesIO
-import matplotlib.pyplot as plt
-import numpy as np
-import PIL
 from io import BytesIO
 from pathlib import Path 
 from typing import Dict
+
+import matplotlib.pyplot as plt
+import numpy as np
+import PIL
+
 
 TMP_PNG_PATH = (Path(__file__).parent / 'grapher.tmp.png').as_posix()
 
@@ -27,11 +27,10 @@ def get_context_for_area(area: bpy.types.Area, region_type='WINDOW') -> Dict:
             return ctx
 
     return {}
+0
 
-
-def example_plot():
-    print('example_plot()')
-    col = np.linspace(0, 2 * np.pi, 200)
+def example_plot(n=2):
+    col = np.linspace(0, n * np.pi, 200)
     row = np.sin(col)
 
     fig, ax = plt.subplots()
