@@ -110,9 +110,9 @@ def ui_overrides(_: None):
 
 @persistent
 def init_grapher(_):
-    updater = lambda self, ctx: bpy.ops.grapher.refresh_plot()
+    updater = lambda self, ctx: bpy.ops.grapher.generate_plot()
     bpy.types.Scene.grapher_n = bpy.props.IntProperty(name='n', description='modify graph n value', default=2, update=updater)
-    bpy.ops.grapher.refresh_plot()
+    bpy.ops.grapher.generate_plot()
 
 load_post_handlers = [ui_overrides, init_grapher]
 

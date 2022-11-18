@@ -20,7 +20,7 @@ class GrapherPanel(bpy.types.Panel):
         row.prop(context.scene, 'grapher_n')
 
         row = layout.row()
-        row.operator('grapher.refresh_plot')
+        row.operator('grapher.generate_plot')
 
 #
 # topbar (file/window menus)
