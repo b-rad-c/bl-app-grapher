@@ -12,6 +12,7 @@ class GrapherPanel(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'object'
+    #bl_options = {'INSTANCED'}
 
     def draw(self, context):
         layout = self.layout

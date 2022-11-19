@@ -28,7 +28,8 @@ def draw_left_override(self, context: bpy.types.Context):
 
 def draw_properties_header(self, context: bpy.types.Context):
     layout = self.layout
-    layout.template_header()
+    layout.label(text='Grapher configuration')
+    #layout.template_header()
 
 def draw_properties_navigation(self, context):
     return None
@@ -55,55 +56,36 @@ class AppStateStore(AppOverrideState):
     @staticmethod
     def class_ignore():
         # bpy.types.STATUSBAR_HT_header.draw = lambda self, context: None
-        # bpy.types.IMAGE_HT_header.draw = lambda self, context: None
         # bpy.types.SEQUENCER_HT_header.draw = lambda self, context: None
         # bpy.types.TEXT_HT_header.draw = lambda self, context: None
+
+        bpy.types.IMAGE_HT_header.draw = lambda self, context: None
+
         bpy.types.TOPBAR_HT_upper_bar.draw_left = draw_left_override
         bpy.types.TOPBAR_HT_upper_bar.draw_right = lambda self, context: None
         bpy.types.TOPBAR_MT_editor_menus.draw = lambda self, context: None
-        # bpy.types.PROPERTIES_HT_header.draw = draw_properties_header
-        # bpy.types.PROPERTIES_PT_navigation_bar.draw = draw_properties_navigation
-        # bpy.types.PROPERTIES_PT_options.draw = lambda self, context: None
 
-        classes = []
+        #bpy.types.WORKSPACE_PT_main.draw =lambda self, context: None
+        #bpy.types.PROPERTIES_HT_header.draw = draw_properties_header
+        #bpy.types.PROPERTIES_PT_navigation_bar.draw = draw_properties_navigation
+        #bpy.types.PROPERTIES_PT_navigation_bar.width=1
+        #bpy.types.PROPERTIES_PT_navigation_bar.height=1
+        #bpy.types.PROPERTIES_PT_options.draw = lambda self, context: None
 
-        # print('bpy.types.Panel')
+        #bpy.types.OBJECT_PT_context_object.draw = lambda self, context: None
+        #bpy.types.SpaceProperties.show_region_header = True
+
+        classes = [
+            #bpy.types.PROPERTIES_PT_navigation_bar
+        ]
+
         classes.extend(
             bl_app_override.class_filter(
                 bpy.types.Panel,
-                # whitelist=[
-                #     bpy.types.TOPBAR_HT_upper_bar,
-                #     bpy.types.TOPBAR_MT_editor_menus
-                # ]
+                blacklist=[ui.GrapherPanel]
             ),
         )
-        # # print('bpy.types.Header')
-        
-        # classes.extend(
-        #     bl_app_override.class_filter(
-        #         bpy.types.Header,
-        #         # blacklist=[
-        #         #     bl_ui.space_topbar.TOPBAR_HT_upper_bar,
-        #         #     bl_ui.space_topbar.TOPBAR_MT_blender,
-        #         #     bl_ui.space_topbar.TOPBAR_MT_editor_menu
-        #         # ]
-        #     ),
-        # )
-        # print('bpy.types.Menu')
-        # classes.extend(
-        #     bl_app_override.class_filter(
-        #         bpy.types.Menu,
-        #     ),
-        # )
-        # print('bpy.types.Operator')
-        # classes.extend(
-        #     bl_app_override.class_filter(
-        #         bpy.types.Operator,
-        #     ),
-        # )
-        
-        # for cls in classes:
-        #     print(cls)
+
 
         return classes
 
@@ -148,32 +130,14 @@ class AppStateStore(AppOverrideState):
 
 @persistent
 def setup_user_preferences(_):
-    # Most settings can be defined in the userpref.blend for the template
-    # however sometimes is more convenient to set the options via Python directly.
     prefs = bpy.context.preferences
-
-    # To prevent an extra userpref.blend file to be
-    # create when we change the prefernces we turn
-    # this option off.
-    #
-    # Otherwise during development of the add-on this
-    # gets on the way.
     prefs.use_preferences_save = False
-
-    # addons = prefs.addons
-    # try:
-    #     addons.remove(addons['cycles'])
-    #     print('cycles addon REMOVED')
-    # except KeyError:
-    #     print('cycles addon NOT FOUND')
-
-    #breakpoint()
 
     # Dedicated apps settings.
     apps = prefs.apps
     apps.show_corner_split = False
     apps.show_regions_visibility_toggle = False
-    apps.show_edge_resize = False
+    #apps.show_edge_resize = False
 
 @persistent
 def ui_overrides(_: None):
@@ -187,13 +151,27 @@ def ui_overrides(_: None):
 
     # customise spaces
     for area in screen.areas:
-        for space in area.spaces:
+        regions = area.regions
+        spaces = area.spaces
+        def dump_regions():
+            for region in regions:
+                    print(f'\t{region.type} {region.alignment=} {region.width=} {region.height=} {region.x=} {region.y=}')
+        for space in spaces:
 
             if space.type == 'IMAGE_EDITOR':
                 space.show_region_header = False
+                print('IMAGE_EDITOR')
+                dump_regions()
+                #breakpoint()
+                
 
             if space.type == 'PROPERTIES':
-                items = space.rna_type.properties['context'].enum_items
+                space.show_region_header = False
+                #space.use
+                print('PROPERTIES')
+                dump_regions()
+                #breakpoint()
+
 
 @persistent
 def init_grapher(_):
@@ -203,7 +181,7 @@ def init_grapher(_):
     bpy.ops.grapher.refresh_plot()
 
 
-load_post_handlers = [setup_user_preferences, init_grapher]
+load_post_handlers = [setup_user_preferences, ui_overrides, init_grapher]
 
 #
 # register
