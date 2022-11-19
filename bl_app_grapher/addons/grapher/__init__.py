@@ -1,6 +1,6 @@
 from grapher import (
     ops,
-    ui,
+    #ui,
     util
 )
 
@@ -19,20 +19,20 @@ _need_reload = 'ops' in locals()
 if _need_reload:
     import importlib
     ops = importlib.reload(ops)
-    ui = importlib.reload(ui)
+    #ui = importlib.reload(ui)
     util = importlib.reload(util)
 
 
 def register():
-    print("Addon Register", __file__)
+    print('Addon Register', __file__)
     ops.register()
-    ui.register()
+    #ui.register()
 
 
 def unregister():
-    print("Addon Unregister", __file__)
+    print('Addon Unregister', __file__)
     ops.unregister()
-    ui.unregister()
+    #ui.unregister()
 
 
 if __name__ == '__main__':

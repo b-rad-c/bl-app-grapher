@@ -27,7 +27,7 @@ def get_context_for_area(area: bpy.types.Area, region_type='WINDOW') -> Dict:
             return ctx
 
     return {}
-0
+
 
 def example_plot(n=2):
     col = np.linspace(0, n * np.pi, 200)

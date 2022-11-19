@@ -52,7 +52,7 @@ def topbar_menu_draw(self: Any, context: bpy.types.Context) -> None:
 #
 
 classes = [MV_TOPBAR_MT_file_menu, MV_TOPBAR_MT_window_menu, GrapherPanel]
-
+#classes = []
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
