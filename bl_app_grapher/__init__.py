@@ -48,44 +48,63 @@ def draw_properties_navigation(self, context):
         #breakpoint()
         layout.prop_tabs_enum(view, 'context', icon_only=True)
 
+empty = lambda self, context: None
 
 class AppStateStore(AppOverrideState):
-    # Just provides data & callbacks for AppOverrideState
     __slots__ = ()
 
     @staticmethod
     def class_ignore():
-        # bpy.types.STATUSBAR_HT_header.draw = lambda self, context: None
-        # bpy.types.SEQUENCER_HT_header.draw = lambda self, context: None
-        # bpy.types.TEXT_HT_header.draw = lambda self, context: None
-
+               
         bpy.types.IMAGE_HT_header.draw = lambda self, context: None
-
         bpy.types.TOPBAR_HT_upper_bar.draw_left = draw_left_override
         bpy.types.TOPBAR_HT_upper_bar.draw_right = lambda self, context: None
         bpy.types.TOPBAR_MT_editor_menus.draw = lambda self, context: None
 
-        #bpy.types.WORKSPACE_PT_main.draw =lambda self, context: None
-        #bpy.types.PROPERTIES_HT_header.draw = draw_properties_header
-        #bpy.types.PROPERTIES_PT_navigation_bar.draw = draw_properties_navigation
+        bpy.types.STATUSBAR_HT_header.draw = lambda self, context: None
+        bpy.types.WORKSPACE_PT_main.draw =lambda self, context: None
+        bpy.types.PROPERTIES_HT_header.draw = draw_properties_header
+        bpy.types.PROPERTIES_PT_navigation_bar.draw = draw_properties_navigation
         #bpy.types.PROPERTIES_PT_navigation_bar.width=1
         #bpy.types.PROPERTIES_PT_navigation_bar.height=1
         #bpy.types.PROPERTIES_PT_options.draw = lambda self, context: None
 
+        bl_ui.space_properties.PROPERTIES_HT_header.draw = lambda self, context: None
         #bpy.types.OBJECT_PT_context_object.draw = lambda self, context: None
-        #bpy.types.SpaceProperties.show_region_header = True
+        bpy.types.SpaceProperties.show_region_header = False
+        bpy.types.SpaceProperties.type = 'EMPTY'
+        bpy.types.SpaceProperties.draw = lambda self, context: None
+        
 
         classes = [
             #bpy.types.PROPERTIES_PT_navigation_bar
         ]
 
-        classes.extend(
-            bl_app_override.class_filter(
-                bpy.types.Panel,
-                blacklist=[ui.GrapherPanel]
-            ),
-        )
+        def func(cls):
+            ignore = False
+            if cls.__name__.startswith('PROPERTIES'):
+                ignore = True
+            if cls.__name__.startswith('OBJECT'):
+                ignore = True
 
+            if ignore:
+                print(f'ignoring: {cls.__name__} {cls}')
+
+            return ignore
+
+        for cls in filter(func, bpy.types.Panel.__subclasses__()):
+            classes.append(cls)
+            #print(type(cls.__name__), cls.__name__)
+            # breakpoint()
+
+        # classes.extend(
+        #     bl_app_override.class_filter(
+        #         bpy.types.Panel,
+        #         blacklist=[ui.GrapherPanel]
+        #     ),
+        # )
+
+        print(f'{len(classes)=}')
 
         return classes
 
@@ -133,7 +152,6 @@ def setup_user_preferences(_):
     prefs = bpy.context.preferences
     prefs.use_preferences_save = False
 
-    # Dedicated apps settings.
     apps = prefs.apps
     apps.show_corner_split = False
     apps.show_regions_visibility_toggle = False
@@ -170,7 +188,7 @@ def ui_overrides(_: None):
                 #space.use
                 print('PROPERTIES')
                 dump_regions()
-                #breakpoint()
+                breakpoint()
 
 
 @persistent

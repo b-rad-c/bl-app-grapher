@@ -7,7 +7,7 @@ from typing import Any
 
 class GrapherPanel(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
-    bl_label = 'Grapher Properties'
+    bl_label = 'Properties'
     bl_idname = 'GRAPHER_PT_panel'
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
