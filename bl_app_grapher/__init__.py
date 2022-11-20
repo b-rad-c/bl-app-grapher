@@ -72,7 +72,7 @@ class AppStateStore(AppOverrideState):
         bl_ui.space_properties.PROPERTIES_HT_header.draw = lambda self, context: None
         #bpy.types.OBJECT_PT_context_object.draw = lambda self, context: None
         bpy.types.SpaceProperties.show_region_header = False
-        bpy.types.SpaceProperties.type = 'EMPTY'
+       
         bpy.types.SpaceProperties.draw = lambda self, context: None
         
 
@@ -162,10 +162,13 @@ def ui_overrides(_: None):
     print('ui_overrides()')
     
     # init wm
-    wm = bpy.data.window_managers['WinMan']
+    wm = bpy.data.window_managers['WinMan']    
     win = wm.windows[0]
     screen = win.screen
     screen.show_statusbar = False
+
+    #sc = bpy.ops.screen.new()
+    # breakpoint()
 
     # customise spaces
     for area in screen.areas:
@@ -188,7 +191,7 @@ def ui_overrides(_: None):
                 #space.use
                 print('PROPERTIES')
                 dump_regions()
-                breakpoint()
+                #breakpoint()
 
 
 @persistent
