@@ -13,7 +13,6 @@ class refresh_plot(bpy.types.Operator):
         return True
 
     def execute(self, context: bpy.types.Context) -> Set[str]:
-        print('grapher.refresh_plot.execute()')
         example_plot(context.scene.grapher_n)
         image = bpy.data.images.load(TMP_PNG_PATH)
 
