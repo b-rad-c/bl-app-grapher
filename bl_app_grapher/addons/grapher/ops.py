@@ -1,25 +1,24 @@
 import bpy
 from typing import Set
-from .util import TMP_PNG_PATH, example_plot, get_context_for_area
+from .util import get_context_for_area, draw_plot
 
 
-class refresh_plot(bpy.types.Operator):
-    bl_idname = 'grapher.refresh_plot'
-    bl_label = 'Refresh plot'
-    bl_description = 'Refreshes the plot image'
+class generate_plot(bpy.types.Operator):
+    bl_idname = 'grapher.generate_plot'
+    bl_label = 'Generate plot'
+    bl_description = 'Generates a plot and updates the image canvas'
 
     @classmethod
     def poll(cls, _) -> bool:
         return True
 
     def execute(self, context: bpy.types.Context) -> Set[str]:
-        example_plot(context.scene.grapher_n)
-        image = bpy.data.images.load(TMP_PNG_PATH)
+        print('grapher.generate_plot()')
+        draw_plot(context.scene.grapher_n)
 
         for area in context.screen.areas:
             for space in area.spaces:
-                if space.type == 'IMAGE_EDITOR':
-                    area.spaces.active.image = image    
+                if space.type == 'IMAGE_EDITOR': 
                     bpy.ops.image.view_all(get_context_for_area(area), fit_view=True)
                     break
 
@@ -31,7 +30,7 @@ class refresh_plot(bpy.types.Operator):
 #
 
 
-classes = [refresh_plot]
+classes = [generate_plot]
 
 def register():
     for cls in classes:

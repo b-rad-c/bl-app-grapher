@@ -8,7 +8,7 @@ import numpy as np
 import PIL
 
 
-TMP_PNG_PATH = (Path(__file__).parent / 'grapher.tmp.png').as_posix()
+PLOT_IMAGE_NAME = 'plot'
 
 
 def get_context_for_area(area: bpy.types.Area, region_type='WINDOW') -> Dict:
@@ -29,21 +29,43 @@ def get_context_for_area(area: bpy.types.Area, region_type='WINDOW') -> Dict:
     return {}
 
 
-def example_plot(n=2):
-    col = np.linspace(0, n * np.pi, 200)
-    row = np.sin(col)
+def draw_plot(n=2):
 
-    fig, ax = plt.subplots()
-    ax.plot(col, row)
+    #
+    # plot
+    #
+    
+    column = np.linspace(0, n * np.pi, 200)
+    row = np.sin(column)
 
-    fig.canvas.draw()
-    canvas = fig.canvas
+    figure, axes = plt.subplots()
+    axes.plot(column, row)
 
+    figure.canvas.draw()
     plt.close()
+    
+    #
+    # convert to png
+    #
 
     png = BytesIO()
-    canvas.print_png(png)
+    figure.canvas.print_png(png)
+    pixels = np.asarray(PIL.Image.open(png))
     
-    img = PIL.Image.open(png)
-    img.save(TMP_PNG_PATH)
+    #
+    # to bpy image
+    #
 
+    height, width, depth = pixels.shape
+    
+    if PLOT_IMAGE_NAME in bpy.data.images:
+        image = bpy.data.images[PLOT_IMAGE_NAME]
+        image.scale(width, height)
+    else:
+        image = bpy.data.images.new(PLOT_IMAGE_NAME, width=width, height=height)
+    
+    inverted_y_axis = np.flip(pixels, axis=0)
+    bpy_pixels = np.fromiter(inverted_y_axis.ravel() / 255.0, dtype=np.float64, count=width * height * depth)
+
+    image.pixels.foreach_set(bpy_pixels.tolist())
+    image.update()

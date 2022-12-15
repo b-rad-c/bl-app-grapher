@@ -1,20 +1,9 @@
 import os
 import bpy
-from bpy.app.handlers import persistent
-import bl_app_override
-from bl_app_override.helpers import AppOverrideState
 import bl_ui
+from bpy.app.handlers import persistent
+from bl_app_override.helpers import AppOverrideState
 
-
-def dump_classes(filename):
-    classes = [bpy.types.Panel, bpy.types.Header, bpy.types.Menu, bpy.types.Operator]
-    with open(filename, 'w+') as f:
-        for parent_class in classes:
-            f.write(f'{parent_class}\n')
-            for cls in parent_class.__subclasses__():
-                f.write(f'\t{cls}\n')
-
-# dump_classes('dump_classes.txt')
 
 #
 # overrides
@@ -128,31 +117,24 @@ def ui_overrides(_: None):
 
     # customise spaces
     for area in screen.areas:
-        regions = area.regions
         spaces = area.spaces
-        def dump_regions():
-            for region in regions:
-                    print(f'\t{region.type} {region.alignment=} {region.width=} {region.height=} {region.x=} {region.y=}')
         for space in spaces:
 
             if space.type == 'IMAGE_EDITOR':
                 space.show_region_header = False
-                # print('IMAGE_EDITOR')
-                # dump_regions()
                 
-
             if space.type == 'PROPERTIES':
                 space.show_region_header = False
-                # print('PROPERTIES')
-                # dump_regions()
 
 
 @persistent
 def init_grapher(_):
     print('init_grapher()')
-    updater = lambda self, ctx: bpy.ops.grapher.refresh_plot()
+    def updater(self, ctx):
+        bpy.ops.grapher.generate_plot()
+        
     bpy.types.Scene.grapher_n = bpy.props.IntProperty(name='n', description='modify graph n value', default=2, update=updater)
-    bpy.ops.grapher.refresh_plot()
+    bpy.ops.grapher.generate_plot()
 
 
 load_post_handlers = [setup_user_preferences, ui_overrides, init_grapher]

@@ -12,16 +12,11 @@ class GrapherPanel(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'object'
-    #bl_options = {'INSTANCED'}
+
 
     def draw(self, context):
-        layout = self.layout
-
-        row = layout.row()
+        row = self.layout.row()
         row.prop(context.scene, 'grapher_n')
-
-        row = layout.row()
-        row.operator('grapher.refresh_plot')
 
 #
 # topbar (file/window menus)
@@ -53,7 +48,7 @@ def topbar_menu_draw(self: Any, context: bpy.types.Context) -> None:
 #
 
 classes = [MV_TOPBAR_MT_file_menu, MV_TOPBAR_MT_window_menu, GrapherPanel]
-#classes = []
+
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
