@@ -15,8 +15,11 @@ class GrapherPanel(bpy.types.Panel):
 
 
     def draw(self, context):
-        row = self.layout.row()
-        row.prop(context.scene, 'grapher_n')
+        column = self.layout.column()
+        column.label(text='Function')
+        column.prop_tabs_enum(context.scene, 'grapher_function')
+        column.separator(factor=1.0)
+        column.prop(context.scene, 'grapher_periods')
 
 #
 # topbar (file/window menus)

@@ -132,8 +132,28 @@ def init_grapher(_):
     print('init_grapher()')
     def updater(self, ctx):
         bpy.ops.grapher.generate_plot()
+
+    grapher_functions = [
+        ('sin', 'sin', 'a sin wave', 'EVENT_S', 0),
+        ('cos', 'cos', 'a cos wave', 'EVENT_C', 1),
+        ('tan', 'tan', 'a tan wave', 'EVENT_T', 2)
+    ]
+
+    bpy.types.Scene.grapher_function = bpy.props.EnumProperty(
+        name='function', 
+        default='sin', 
+        items=grapher_functions, 
+        description='Which function to plot', 
+        update=updater)
+
+    bpy.types.Scene.grapher_periods = bpy.props.IntProperty(
+        name='periods',
+        default=1, 
+        min=1,
+        soft_max=100,
+        description='The number of periods displayed on the plot',
+        update=updater)
         
-    bpy.types.Scene.grapher_n = bpy.props.IntProperty(name='n', description='modify graph n value', default=2, update=updater)
     bpy.ops.grapher.generate_plot()
 
 
