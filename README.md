@@ -1,4 +1,4 @@
-# Blender App Grapher
+# Blender App Template Sample - App Grapher
 
 A sample Blender App Template that graphs math functions.
 
