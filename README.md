@@ -5,7 +5,8 @@ A sample Blender App Template that graphs math functions.
 Tested on Blender 3.6 with Python 3.10
 
 ### known issues
-Crashes using Apple silicon (METAL) processors when using any of the UI buttons. To use with apple silicon, disable metal and GPU processing and then launch the app template.
+1. The app crashes when using METAL GPU w Apple silicon when using any of the UI buttons. To use with apple silicon, open Blender normally (without the app template) and switch from METAL to OpenGL, then quit and launch the app template.
+2. The distributed .zip file does not work due to dependencies not being copied into zip file.
 
 # Use template 
 You can use the app without downloading this repo and setting up a development environment.
